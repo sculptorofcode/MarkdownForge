@@ -422,8 +422,11 @@ def schedule_tasks():
         time.sleep(1)
 
 if __name__ == '__main__':
+    # Remove the Flask development server
     # Start the scheduler in a separate thread
     threading.Thread(target=keep_alive_scheduler, daemon=True).start()
     threading.Thread(target=schedule_tasks, daemon=True).start()
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    
+    # Add a message to indicate production setup
+    print("Run this application with a WSGI server like Gunicorn or uWSGI.")
+    print("Example: gunicorn -w 4 -b 0.0.0.0:5000 app:app")
