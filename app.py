@@ -52,10 +52,21 @@ def generate_pdf_from_content(content):
     pdf.set_auto_page_break(auto=True, margin=15)
     
     # Add a Unicode-compatible font
-    font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
-    pdf.add_font("DejaVu", "", font_path, uni=True)
-    pdf.add_font("DejaVu", "B", font_path, uni=True)
-    pdf.add_font("DejaVu", "I", font_path, uni=True)
+    font_path = "DejaVuSans.ttf"
+    possible_paths = [
+        os.path.join(os.path.dirname(__file__), font_path),  # Current project directory
+        os.path.join(os.getcwd(), font_path),               # Current working directory
+        font_path                                           # Direct path
+    ]
+    
+    font_full_path = next((path for path in possible_paths if os.path.exists(path)), None)
+    if not font_full_path:
+        app.logger.error(f"Font file not found in any of the following locations: {possible_paths}")
+        raise FileNotFoundError(f"Font file not found in any of the following locations: {possible_paths}")
+    
+    pdf.add_font("DejaVu", "", font_full_path, uni=True)
+    pdf.add_font("DejaVu", "B", font_full_path, uni=True)
+    pdf.add_font("DejaVu", "I", font_full_path, uni=True)
     
     pdf.add_page()
     
@@ -415,4 +426,4 @@ if __name__ == '__main__':
     threading.Thread(target=keep_alive_scheduler, daemon=True).start()
     threading.Thread(target=schedule_tasks, daemon=True).start()
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
