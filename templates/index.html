@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkdownForge</title>
+    <meta name="description" content="Easily convert your markdown files into beautifully formatted PDF documents with MarkdownForge.">
+    <meta name="keywords" content="MarkdownForge, Markdown to PDF, Markdown Converter, PDF Generator, Markdown Editor, Markdown Preview">
+    <meta name="author" content="Saikat Roy">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://yourwebsite.com">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon/icon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicon/icon-192.png">
+    <link rel="manifest" href="static/favicon/site.webmanifest">
+    <link rel="mask-icon" href="static/favicon/icon-512.png" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2b5797">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="MarkdownForge - Convert Markdown to PDF">
+    <meta property="og:description" content="Easily convert your markdown files into beautifully formatted PDF documents with MarkdownForge.">
+    <meta property="og:image" content="static/logo/icon-512.png">
+    <meta property="og:url" content="https://yourwebsite.com">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MarkdownForge">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MarkdownForge - Convert Markdown to PDF">
+    <meta name="twitter:description" content="Easily convert your markdown files into beautifully formatted PDF documents with MarkdownForge.">
+    <meta name="twitter:image" content="static/logo/icon-512.png">
+    <meta name="twitter:creator" content="@sculptor_of_code">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "MarkdownForge",
+      "url": "https://yourwebsite.com",
+      "description": "Easily convert your markdown files into beautifully formatted PDF documents with MarkdownForge.",
+      "applicationCategory": "Productivity",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Saikat Roy",
+        "url": "https://linktr.ee/sculptor_of_code"
+      }
+    }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="static/logo/logo.png" alt="MarkdownForge Logo" class="logo">
+        </div>
+        <h1>MarkdownForge</h1>
+        <p class="tagline">Transform your markdown into beautifully formatted PDF documents</p>
+    </header>
+
+
+    <div class="upload-section">
+        <div class="upload-button" id="upload-button">
+            <i class="fas fa-file-upload"></i> Upload Markdown File
+            <input type="file" name="file" id="file-input" accept=".md,.markdown,.txt">
+        </div>
+        <div class="file-info" id="file-info"></div>
+    </div>
+
+    <div class="main-container">
+        {% if get_flashed_messages() %}
+        <div class="flash-messages">
+            {% for message in get_flashed_messages() %}
+            <div class="flash-message">
+                <i class="fas fa-exclamation-circle"></i> {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="tabs">
+                <div class="tab active" data-tab="editor">
+                    <i class="fas fa-edit"></i> Write Markdown
+                </div>
+            </div>
+
+            <div class="tab-content active" id="editor-tab">
+                <form action="{{ url_for('convert_text') }}" method="post" id="markdown-form"
+                    enctype="multipart/form-data">
+
+                    <div class="editor-container">
+                        <div class="editor-column">
+                            <div class="column-header">
+                                <div class="textarea-label">
+                                    <i class="fas fa-code"></i> Markdown Editor
+                                </div>
+                            </div>
+                            <textarea id="markdown-editor" name="markdown-text"
+                                placeholder="# Your Markdown Here&#10;&#10;Write your markdown text and see the preview on the right side."></textarea>
+                        </div>
+                        <div class="editor-column">
+                            <div class="column-header">
+                                <div class="textarea-label">
+                                    <i class="fas fa-eye"></i> Live Preview
+                                </div>
+                                <div class="preview-actions">
+                                    <button type="button" class="action-btn" id="clear-btn" title="Clear editor">
+                                        <i class="fas fa-eraser"></i>
+                                    </button>
+                                    <button type="button" class="action-btn" id="example-btn" title="Load example">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </button>
+                                    <button type="submit" class="action-btn" id="submit-btn" title="Convert to PDF">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="preview-container" id="markdown-preview"></div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn">
+                            <i class="fas fa-file-pdf"></i> Convert to PDF
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2023 MarkdownForge</p>
+            <p class="creator-info">
+                Created by <strong>Saikat Roy</strong> |
+                <a href="https://linktr.ee/sculptor_of_code" target="_blank">
+                    <i class="fas fa-link"></i> More Links
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="static/js/marked.min.js"></script>
+    <script src="static/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "MarkdownForge",
+  "short_name": "MarkdownForge",
+  "description": "Convert markdown to beautifully formatted PDF documents",
+  "icons": [
+    {
+      "src": "/static/favicon/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/favicon/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "orientation": "portrait"
+}
