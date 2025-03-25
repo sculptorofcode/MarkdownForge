@@ -4,11 +4,10 @@ from generate_pdf import parse_markdown, PDF, process_text_formatting, format_bu
 import uuid
 import re
 from flask_cors import CORS
-import threading
 import requests
 import time
 from dotenv import load_dotenv
-import schedule
+from apscheduler.schedulers.background import BackgroundScheduler
 
 load_dotenv()
 
@@ -52,7 +51,7 @@ def generate_pdf_from_content(content):
     pdf.set_auto_page_break(auto=True, margin=15)
     
     # Add a Unicode-compatible font
-    font_path = "DejaVuSans.ttf"
+    font_path = "NotoSans-Regular.ttf"
     possible_paths = [
         os.path.join(os.path.dirname(__file__), font_path),  # Current project directory
         os.path.join(os.getcwd(), font_path),               # Current working directory
@@ -64,9 +63,9 @@ def generate_pdf_from_content(content):
         app.logger.error(f"Font file not found in any of the following locations: {possible_paths}")
         raise FileNotFoundError(f"Font file not found in any of the following locations: {possible_paths}")
     
-    pdf.add_font("DejaVu", "", font_full_path, uni=True)
-    pdf.add_font("DejaVu", "B", font_full_path, uni=True)
-    pdf.add_font("DejaVu", "I", font_full_path, uni=True)
+    pdf.add_font("NotoSans", "", font_full_path, uni=True)
+    pdf.add_font("NotoSans", "B", font_full_path, uni=True)
+    pdf.add_font("NotoSans", "I", font_full_path, uni=True)
     
     pdf.add_page()
     
@@ -379,15 +378,13 @@ def cleanup():
         return {'status': 'error', 'message': str(e)}, 500
 
 def keep_alive_scheduler():
-    """Scheduler to ping the website every 10 minutes."""
-    while True:
-        try:
-            url = os.environ.get('PING_URL', 'http://localhost:5000/health')
-            requests.get(url)
-            app.logger.info(f"Pinged {url} to keep the site alive.")
-        except Exception as e:
-            app.logger.error(f"Error pinging {url}: {str(e)}")
-        time.sleep(600)  # Wait for 10 minutes
+    """Ping the website to keep it alive."""
+    url = os.environ.get('PING_URL', 'http://localhost:5000/health')
+    try:
+        requests.get(url)
+        app.logger.info(f"Pinged {url} to keep the site alive.")
+    except Exception as e:
+        app.logger.error(f"Error pinging {url}: {str(e)}")
 
 def scheduled_cleanup():
     """Scheduled cleanup task to remove old files."""
@@ -414,19 +411,9 @@ def scheduled_cleanup():
     except Exception as e:
         app.logger.error(f"Error during scheduled cleanup: {str(e)}")
 
-def schedule_tasks():
-    """Schedule tasks like cleanup."""
-    schedule.every().day.at("00:00").do(scheduled_cleanup)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
 if __name__ == '__main__':
-    # Remove the Flask development server
-    # Start the scheduler in a separate thread
-    threading.Thread(target=keep_alive_scheduler, daemon=True).start()
-    threading.Thread(target=schedule_tasks, daemon=True).start()
-    
-    # Add a message to indicate production setup
-    print("Run this application with a WSGI server like Gunicorn or uWSGI.")
-    print("Example: gunicorn -w 4 -b 0.0.0.0:5000 app:app")
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(keep_alive_scheduler, 'interval', minutes=10)
+    scheduler.add_job(scheduled_cleanup, 'cron', hour=0, minute=0)
+    scheduler.start()
+    app.run()

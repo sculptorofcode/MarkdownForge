@@ -5,7 +5,7 @@ import os
 class PDF(FPDF):
     def header(self):
         # Add a header with better styling
-        self.set_font("DejaVu", "B", 16)
+        self.set_font("NotoSans", "B", 16)
         self.set_text_color(0, 51, 102)  # Dark blue color
         self.set_line_width(0.5)
         self.line(10, self.get_y(), self.w - 10, self.get_y())
@@ -14,29 +14,29 @@ class PDF(FPDF):
     def footer(self):
         # Add a footer with page numbers
         self.set_y(-15)
-        self.set_font("DejaVu", "I", 8)
+        self.set_font("NotoSans", "I", 8)
         self.set_text_color(128, 128, 128)  # Gray color
         self.cell(0, 10, f"Page {self.page_no()}", align="C")
 
     def chapter_title(self, title, level=1):
         # Format titles based on heading level
         if level == 1:
-            self.set_font("DejaVu", "B", 14)
+            self.set_font("NotoSans", "B", 14)
             self.set_text_color(0, 51, 102)  # Dark blue
             self.cell(0, 10, title, ln=True)
             self.line(10, self.get_y(), self.w - 10, self.get_y())
         elif level == 2:
-            self.set_font("DejaVu", "B", 12)
+            self.set_font("NotoSans", "B", 12)
             self.set_text_color(51, 51, 51)  # Dark gray
             self.cell(0, 10, title, ln=True)
         else:
-            self.set_font("DejaVu", "B", 11)
+            self.set_font("NotoSans", "B", 11)
             self.set_text_color(51, 51, 51)  # Dark gray
             self.cell(0, 10, title, ln=True)
         self.ln(5)
 
     def chapter_body(self, body):
-        self.set_font("DejaVu", "", 10)
+        self.set_font("NotoSans", "", 10)
         self.set_text_color(0, 0, 0)  # Black text
         self.multi_cell(0, 6, body)
         self.ln()
@@ -46,12 +46,12 @@ class PDF(FPDF):
         self.set_fill_color(240, 240, 240)  # Light gray background
         self.multi_cell(0, 6, code, fill=True)
         self.ln(5)
-        self.set_font("DejaVu", "", 10)  # Reset font
+        self.set_font("NotoSans", "", 10)  # Reset font
 
     def add_bullet_point(self, text, indent_level=0, number=None):
         """Add a bullet point or numbered item with proper indentation"""
         indent = 5 + (indent_level * 5)  # 5mm per indent level
-        self.set_font("DejaVu", "", 10)
+        self.set_font("NotoSans", "", 10)
         self.set_text_color(0, 0, 0)
         
         # Save current x position
@@ -137,13 +137,13 @@ def render_formatted_text(pdf, formatted_parts):
             
         # Set the appropriate font style
         if style == 'B':
-            pdf.set_font("DejaVu", "B", 10)
+            pdf.set_font("NotoSans", "B", 10)
         elif style == 'I':
-            pdf.set_font("DejaVu", "I", 10)
+            pdf.set_font("NotoSans", "I", 10)
         elif style == 'BI':  # Handle bold and italic
-            pdf.set_font("DejaVu", "BI", 10)
+            pdf.set_font("NotoSans", "BI", 10)
         else:
-            pdf.set_font("DejaVu", "", 10)
+            pdf.set_font("NotoSans", "", 10)
         
         width = pdf.get_string_width(text)
         
