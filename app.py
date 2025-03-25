@@ -382,6 +382,7 @@ def keep_alive_scheduler():
     url = os.environ.get('PING_URL', 'http://localhost:5000/health')
     try:
         requests.get(url)
+        print(f"Pinged {url} to keep the site alive.")
         app.logger.info(f"Pinged {url} to keep the site alive.")
     except Exception as e:
         app.logger.error(f"Error pinging {url}: {str(e)}")
@@ -411,9 +412,10 @@ def scheduled_cleanup():
     except Exception as e:
         app.logger.error(f"Error during scheduled cleanup: {str(e)}")
 
+scheduler = BackgroundScheduler()
+scheduler.add_job(keep_alive_scheduler, 'interval', minutes=10)
+scheduler.add_job(scheduled_cleanup, 'cron', hour=0, minute=0)
+scheduler.start()
+
 if __name__ == '__main__':
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(keep_alive_scheduler, 'interval', minutes=10)
-    scheduler.add_job(scheduled_cleanup, 'cron', hour=0, minute=0)
-    scheduler.start()
     app.run()
