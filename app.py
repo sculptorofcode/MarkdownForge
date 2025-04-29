@@ -377,16 +377,6 @@ def cleanup():
     except Exception as e:
         return {'status': 'error', 'message': str(e)}, 500
 
-def keep_alive_scheduler():
-    """Ping the website to keep it alive."""
-    url = os.environ.get('PING_URL', 'http://localhost:5000/health')
-    try:
-        requests.get(url)
-        print(f"Pinged {url} to keep the site alive.")
-        app.logger.info(f"Pinged {url} to keep the site alive.")
-    except Exception as e:
-        app.logger.error(f"Error pinging {url}: {str(e)}")
-
 def scheduled_cleanup():
     """Scheduled cleanup task to remove old files."""
     try:
@@ -413,7 +403,6 @@ def scheduled_cleanup():
         app.logger.error(f"Error during scheduled cleanup: {str(e)}")
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(keep_alive_scheduler, 'interval', minutes=10)
 scheduler.add_job(scheduled_cleanup, 'cron', hour=0, minute=0)
 scheduler.start()
 
